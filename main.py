@@ -1,51 +1,40 @@
 import streamlit as st
-import random
 
-# 예시 단어장 (단어: 뜻)
-word_dict = {
-    "apple": "사과",
-    "book": "책",
-    "cat": "고양이",
-    "dog": "개",
-    "elephant": "코끼리",
-    "flower": "꽃",
-    "guitar": "기타",
-    "house": "집",
-    "ice": "얼음",
-    "jungle": "정글"
+st.title("✨ MBTI & 혈액형별 특이한 직업 추천 앱 ✨")
+
+# MBTI 선택지
+mbti_options = [
+    "INTJ", "INTP", "ENTJ", "ENTP",
+    "INFJ", "INFP", "ENFJ", "ENFP",
+    "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+    "ISTP", "ISFP", "ESTP", "ESFP"
+]
+
+# 혈액형 선택지
+blood_types = ["A", "B", "AB", "O"]
+
+# 직업 추천 데이터 예시 (조합별 간단 예)
+recommendations = {
+    ("INTJ", "A"): "연구원, 데이터 과학자",
+    ("INTJ", "B"): "프로그래머, 전략 컨설턴트",
+    ("INTJ", "AB"): "과학 작가, 시스템 분석가",
+    ("INTJ", "O"): "기업가, 금융 애널리스트",
+
+    ("ENFP", "A"): "마케팅 전문가, 방송인",
+    ("ENFP", "B"): "여행 가이드, 이벤트 기획자",
+    ("ENFP", "AB"): "연예인, 광고 기획자",
+    ("ENFP", "O"): "강사, 사회 운동가",
+
+    # 기본값 (없는 조합일 때)
+    "default": "프리랜서, 창업가, 컨텐츠 크리에이터"
 }
 
-# 단어 리스트 만들기
-words = list(word_dict.keys())
+# 사용자 입력
+selected_mbti = st.selectbox("MBTI를 선택하세요", mbti_options)
+selected_blood = st.selectbox("혈액형을 선택하세요", blood_types)
 
-st.title("📚 영어 단어 암기 앱")
-
-if "current_word" not in st.session_state:
-    st.session_state.current_word = random.choice(words)
-    st.session_state.show_answer = False
-
-def next_word():
-    st.session_state.current_word = random.choice(words)
-    st.session_state.show_answer = False
-    st.session_state.user_input = ""
-
-# 현재 단어 보여주기
-st.write(f"### 단어: **{st.session_state.current_word}**")
-
-# 사용자 뜻 입력
-user_answer = st.text_input("뜻을 입력하세요", key="user_input")
-
-# 정답 확인 버튼
-if st.button("정답 확인"):
-    st.session_state.show_answer = True
-
-if st.session_state.show_answer:
-    correct_meaning = word_dict[st.session_state.current_word]
-    if user_answer.strip().lower() == correct_meaning:
-        st.success("정답입니다! 🎉")
-    else:
-        st.error(f"틀렸어요... 정답은 '{correct_meaning}' 입니다.")
-
-    # 다음 단어 버튼
-    if st.button("다음 단어"):
-        next_word()
+if st.button("추천 직업 보기"):
+    key = (selected_mbti, selected_blood)
+    job = recommendations.get(key, recommendations["default"])
+    st.write(f"### 당신에게 어울리는 특이한 직업 추천:")
+    st.write(job)
