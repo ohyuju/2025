@@ -1,36 +1,51 @@
 import streamlit as st
-import pandas as pd
-import pydeck as pdk
+import random
 
-# 예시 영화 데이터 (영화명, 장르, 위도, 경도)
-data = [
-    {"title": "La La Land", "genre": "Musical", "lat": 34.0522, "lon": -118.2437},  # LA
-    {"title": "Midnight in Paris", "genre": "Romance", "lat": 48.8566, "lon": 2.3522},  # Paris
-    {"title": "Inception", "genre": "Sci-Fi", "lat": 37.7749, "lon": -122.4194},  # San Francisco
-    {"title": "Amélie", "genre": "Romance", "lat": 48.8566, "lon": 2.3522},  # Paris
-    {"title": "The Dark Knight", "genre": "Action", "lat": 41.8781, "lon": -87.6298},  # Chicago
-    {"title": "Lost in Translation", "genre": "Drama", "lat": 35.6895, "lon": 139.6917},  # Tokyo
-]
+# 예시 단어장 (단어: 뜻)
+word_dict = {
+    "apple": "사과",
+    "book": "책",
+    "cat": "고양이",
+    "dog": "개",
+    "elephant": "코끼리",
+    "flower": "꽃",
+    "guitar": "기타",
+    "house": "집",
+    "ice": "얼음",
+    "jungle": "정글"
+}
 
-df = pd.DataFrame(data)
+# 단어 리스트 만들기
+words = list(word_dict.keys())
 
-st.title("🎬 영화 추천 맵")
+st.title("📚 영어 단어 암기 앱")
 
-# 장르 선택
-genres = df['genre'].unique()
-selected_genre = st.selectbox("원하는 장르를 선택하세요", genres)
+if "current_word" not in st.session_state:
+    st.session_state.current_word = random.choice(words)
+    st.session_state.show_answer = False
 
-# 선택한 장르 영화만 필터링
-filtered_df = df[df['genre'] == selected_genre]
+def next_word():
+    st.session_state.current_word = random.choice(words)
+    st.session_state.show_answer = False
+    st.session_state.user_input = ""
 
-st.write(f"### {selected_genre} 장르 영화들 위치")
+# 현재 단어 보여주기
+st.write(f"### 단어: **{st.session_state.current_word}**")
 
-if filtered_df.empty:
-    st.write("해당 장르의 영화가 없습니다.")
-else:
-    # 지도 표시
-    st.map(filtered_df.rename(columns={"lat": "latitude", "lon": "longitude"}))
+# 사용자 뜻 입력
+user_answer = st.text_input("뜻을 입력하세요", key="user_input")
 
-    # 영화 리스트 보여주기
-    for idx, row in filtered_df.iterrows():
-        st.write(f"- {row['title']} (위치: {row['lat']}, {row['lon']})")
+# 정답 확인 버튼
+if st.button("정답 확인"):
+    st.session_state.show_answer = True
+
+if st.session_state.show_answer:
+    correct_meaning = word_dict[st.session_state.current_word]
+    if user_answer.strip().lower() == correct_meaning:
+        st.success("정답입니다! 🎉")
+    else:
+        st.error(f"틀렸어요... 정답은 '{correct_meaning}' 입니다.")
+
+    # 다음 단어 버튼
+    if st.button("다음 단어"):
+        next_word()
