@@ -3,13 +3,11 @@ import streamlit as st
 st.title("✨ MBTI & 혈액형별 특이한 직업 추천 앱 ✨")
 
 # MBTI 선택지
-mbti_options = [
-    "INTJ", "INTP", "ENTJ", "ENTP",
+mbti_options =
+   ["INTJ", "INTP", "ENTJ", "ENTP",
     "INFJ", "INFP", "ENFJ", "ENFP",
     "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-    "ISTP", "ISFP", "ESTP", "ESFP"
-]
-
+    "ISTP", "ISFP", "ESTP", "ESFP"]
 # 혈액형 선택지
 blood_types = ["A", "B", "AB", "O"]
 
@@ -26,8 +24,7 @@ recommendations = {
     ("ENFP", "O"): "강사, 사회 운동가",
 
     # 기본값 (없는 조합일 때)
-    "default": "프리랜서, 창업가, 컨텐츠 크리에이터"
-}
+    "default": "프리랜서, 창업가, 컨텐츠 크리에이터"}
 
 # 사용자 입력
 selected_mbti = st.selectbox("MBTI를 선택하세요", mbti_options)
