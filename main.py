@@ -3,8 +3,8 @@ import streamlit as st
 st.title("✨ MBTI & 혈액형별 특이한 직업 추천 앱 ✨")
 
 # MBTI 선택지
-mbti_options =
-   ["INTJ", "INTP", "ENTJ", "ENTP",
+mbti_options =[
+    "INTJ", "INTP", "ENTJ", "ENTP",
     "INFJ", "INFP", "ENFJ", "ENFP",
     "ISTJ", "ISFJ", "ESTJ", "ESFJ",
     "ISTP", "ISFP", "ESTP", "ESFP"]
