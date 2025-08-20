@@ -1,53 +1,45 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime
+import random
 
-st.set_page_config(page_title="약물 복용 및 정보 앱", layout="wide")
-
-st.title("💊 약물 복용 및 정보 관리 앱")
-
-# 📌 샘플 약물 데이터 (실제라면 약학 데이터베이스 API 연결 가능)
-drug_info = {
-    "타이레놀": {"효능": "진통·해열제", "주의사항": "간 손상 위험, 과다 복용 금지"},
-    "부루펜": {"효능": "소염·진통·해열제", "주의사항": "위장 장애 주의, 공복 복용 피하기"},
-    "판콜": {"효능": "감기 증상 완화", "주의사항": "다른 감기약과 중복 복용 주의"},
-    "지르텍": {"효능": "알레르기 치료제", "주의사항": "졸음 유발 가능, 운전 주의"},
+# 카테고리별 메뉴
+menu_dict = {
+    "한식": ["김치찌개", "된장찌개", "부대찌개", "비빔밥", "불고기", "삼겹살", "제육볶음", "순대국밥", "칼국수", "냉면"],
+    "중식": ["짜장면", "짬뽕", "탕수육", "마파두부", "마라탕"],
+    "양식": ["피자", "햄버거", "스테이크", "파스타", "리조또"],
+    "일식": ["초밥", "라멘", "우동", "가츠동", "오코노미야키"]
 }
 
-# -------------------
-# 1. 약물 검색 기능
-# -------------------
-st.subheader("🔎 약물 정보 검색")
-search_drug = st.text_input("찾고 싶은 약물 이름을 입력하세요")
+st.title("🍚 오늘 뭐 먹지? - 랜덤 밥 메뉴 추천기 🍴")
+st.write("카테고리를 먼저 선택한 뒤 메뉴를 추천받아보세요!")
 
-if search_drug:
-    if search_drug in drug_info:
-        st.success(f"**{search_drug}**")
-        st.write(f"효능: {drug_info[search_drug]['효능']}")
-        st.write(f"주의사항: {drug_info[search_drug]['주의사항']}")
-    else:
-        st.error("❌ 데이터베이스에 없는 약물입니다.")
+# 세션 상태 초기화
+if "current_menu" not in st.session_state:
+    st.session_state.current_menu = None
+if "selected_category" not in st.session_state:
+    st.session_state.selected_category = None
 
-# -------------------
-# 2. 복용 기록 관리
-# -------------------
-st.subheader("📝 오늘의 약물 복용 기록")
-if "log" not in st.session_state:
-    st.session_state["log"] = []
+# 카테고리 선택
+category = st.selectbox("🍴 카테고리를 선택하세요:", list(menu_dict.keys()))
 
-drug_taken = st.selectbox("복용한 약물을 선택하세요", ["선택 안 함"] + list(drug_info.keys()))
-if st.button("복용 기록 추가"):
-    if drug_taken != "선택 안 함":
-        st.session_state["log"].append({"약물": drug_taken, "시간": datetime.now().strftime("%Y-%m-%d %H:%M")})
-        st.success(f"{drug_taken} 복용 기록이 저장되었습니다.")
+# 버튼 배치
+col1, col2 = st.columns(2)
 
-# -------------------
-# 3. 기록 보기
-# -------------------
-st.subheader("📊 복용 기록 보기")
-if st.session_state["log"]:
-    df = pd.DataFrame(st.session_state["log"])
-    st.table(df)
-else:
-    st.info("아직 복용 기록이 없습니다.")
+# 추천받기 버튼
+with col1:
+    if st.button("✅ 메뉴 추천받기"):
+        st.session_state.selected_category = category
+        st.session_state.current_menu = random.choice(menu_dict[category])
 
+# 싫어요 버튼
+with col2:
+    if st.button("❌ 싫어요 (다시 뽑기)"):
+        if st.session_state.current_menu and st.session_state.selected_category:
+            category_menus = menu_dict[st.session_state.selected_category]
+            new_choice = random.choice([m for m in category_menus if m != st.session_state.current_menu])
+            st.session_state.current_menu = new_choice
+        else:
+            st.warning("먼저 메뉴 추천부터 받아주세요!")
+
+# 현재 메뉴 보여주기
+if st.session_state.current_menu:
+    st.success(f"오늘의 추천 메뉴는 👉 **{st.session_state.current_menu}** 🍽️")
